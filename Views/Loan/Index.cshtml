@@ -1,30 +1,31 @@
-﻿@model LoanCalculator.Models.LoanInputModel
+@model LoanCalculator.Models.LoanInputModel
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Кредитный калькулятор</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Введите данные для расчёта</h1>
+<h2>Кредитный калькулятор</h2>
 
-        <form asp-action="Calculate" method="post">
-            <div class="form-group">
-                <label>Сумма займа:</label>
-                <input asp-for="LoanAmount" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label>Срок займа (в месяцах):</label>
-                <input asp-for="LoanTerm" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label>Годовая ставка (%):</label>
-                <input asp-for="InterestRate" class="form-control" />
-            </div>
-            <button type="submit" class="btn btn-primary">Рассчитать</button>
-        </form>
+<form asp-action="Calculate" method="post">
+    <div class="form-group">
+        <label for="LoanAmount">Сумма займа</label>
+        <input asp-for="LoanAmount" class="form-control" />
+        <span asp-validation-for="LoanAmount" class="text-danger"></span>
     </div>
-</body>
-</html>
+
+    <div class="form-group">
+        <label for="LoanTerm">Срок займа (в месяцах)</label>
+        <input asp-for="LoanTerm" class="form-control" />
+        <span asp-validation-for="LoanTerm" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="InterestRate">Годовая процентная ставка</label>
+        <input asp-for="InterestRate" class="form-control" />
+        <span asp-validation-for="InterestRate" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Рассчитать</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
