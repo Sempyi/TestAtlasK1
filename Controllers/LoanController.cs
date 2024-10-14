@@ -1,4 +1,4 @@
-﻿using LoanCalculator.Models;
+using LoanCalculator.Models;
 using LoanCalculator.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,17 +8,27 @@ namespace LoanCalculator.Controllers
     {
         private readonly LoanCalculatorService _loanCalculatorService;
 
+        /// <summary>
+        /// Инициализация сервиса
+        /// </summary>
         public LoanController()
         {
-            _loanCalculatorService = new LoanCalculatorService(); // Инициализация сервиса
+            _loanCalculatorService = new LoanCalculatorService(); 
         }
-
+        /// <summary>
+        /// Возврат
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
-
+        /// <summary>
+        /// Вызов сервиса расчётов
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Calculate(LoanInputModel model)
         {
