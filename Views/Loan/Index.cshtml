@@ -1,0 +1,30 @@
+﻿@model LoanCalculator.Models.LoanInputModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Кредитный калькулятор</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Введите данные для расчёта</h1>
+
+        <form asp-action="Calculate" method="post">
+            <div class="form-group">
+                <label>Сумма займа:</label>
+                <input asp-for="LoanAmount" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Срок займа (в месяцах):</label>
+                <input asp-for="LoanTerm" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Годовая ставка (%):</label>
+                <input asp-for="InterestRate" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Рассчитать</button>
+        </form>
+    </div>
+</body>
+</html>
