@@ -1,20 +1,26 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace LoanCalculator.Models
 {
+    /// <summary>
+    /// Выво дданных
+    /// </summary>
     public class LoanResultModel
     {
-        public decimal MonthlyPayment { get; set; }    // Ежемесячный платеж
-        public decimal TotalOverpayment { get; set; }  // Итоговая переплата
-        public List<PaymentScheduleItem> Schedule { get; set; } // График платежей
+        public decimal MonthlyPayment { get; set; }    
+        public decimal TotalOverpayment { get; set; }  
+        public List<PaymentScheduleItem> Schedule { get; set; } 
     }
 
+    /// <summary>
+    /// Табличка
+    /// </summary>
     public class PaymentScheduleItem
     {
-        public int PaymentNumber { get; set; }         // Номер платежа
-        public DateTime PaymentDate { get; set; }      // Дата платежа
-        public decimal PrincipalPayment { get; set; }  // Платеж по телу
-        public decimal InterestPayment { get; set; }   // Платеж по процентам
-        public decimal RemainingBalance { get; set; }  // Остаток долга
+        public int PaymentNumber { get; set; }         
+        public DateTime PaymentDate { get; set; }      
+        public decimal PrincipalPayment { get; set; }  
+        public decimal InterestPayment { get; set; }   
+        public decimal RemainingBalance { get; set; }  
     }
 }
