@@ -4,9 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Добавление служб в контейнер.
 builder.Services.AddControllersWithViews();
-
-// Регистрация LoanCalculatorService в контейнере служб.
-builder.Services.AddSingleton<LoanCalculatorService>();
+builder.Services.AddSingleton<ILoanCalculatorService, LoanCalculatorService>();
 
 var app = builder.Build();
 

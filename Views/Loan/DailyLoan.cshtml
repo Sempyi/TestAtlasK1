@@ -1,0 +1,38 @@
+﻿@model LoanCalculator.Models.LoanDailyInputModel
+
+<h2>Кредитный калькулятор (Дни)</h2>
+
+<form asp-action="CalculateDaily" method="post">
+    <div class="form-group">
+        <label for="LoanAmount">Сумма займа</label>
+        <input asp-for="LoanAmount" class="form-control" />
+        <span asp-validation-for="LoanAmount" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="LoanTermDays">Срок займа (в днях)</label>
+        <input asp-for="LoanTermDays" class="form-control" />
+        <span asp-validation-for="LoanTermDays" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="DailyInterestRate">Дневная процентная ставка</label>
+        <input asp-for="DailyInterestRate" class="form-control" />
+        <span asp-validation-for="DailyInterestRate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="PaymentStepDays">Шаг платежа (в днях)</label>
+        <input asp-for="PaymentStepDays" class="form-control" />
+        <span asp-validation-for="PaymentStepDays" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Рассчитать</button>
+    <p><a asp-action="Index">Калькулятор для расчета в месяцах</a></p>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

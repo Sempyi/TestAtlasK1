@@ -1,50 +1,117 @@
+using LoanCalculator.Models;
 using System;
 using System.Collections.Generic;
-using LoanCalculator.Models;
 
 namespace LoanCalculator.Services
 {
-    public class LoanCalculatorService
+    /// <summary>
+    /// Метод для расчета аннуитетных платежей на основе месячных данных
+    /// </summary>
+    public class LoanCalculatorService : ILoanCalculatorService
     {
+        public LoanResultModel CalculateLoan(decimal loanAmount, int loanTermMonths, decimal annualInterestRate)
+        {
+            decimal monthlyInterestRate = annualInterestRate / 100 / 12;
+            decimal monthlyPayment = loanAmount * monthlyInterestRate / (1 - (decimal)Math.Pow(1 + (double)monthlyInterestRate, -loanTermMonths));
+
+            var result = new LoanResultModel
+            {
+                MonthlyPayment = monthlyPayment,
+                Schedule = GenerateMonthlyPaymentSchedule(loanAmount, loanTermMonths, monthlyInterestRate, monthlyPayment)
+            };
+
+            result.TotalOverpayment = result.Schedule.Sum(s => s.InterestPayment);
+
+            return result;
+        }
+
         /// <summary>
-        /// Сервис для расчёта. Сначала идёт расчёт месячной процентной ставки, затем аннуитетного коэфицента, затем цикл расчитывает каждый платёж.
+        /// Метод для расчета аннуитетных платежей на основе дневных данных
         /// </summary>
         /// <param name="loanAmount"></param>
-        /// <param name="loanTerm"></param>
-        /// <param name="interestRate"></param>
+        /// <param name="loanTermDays"></param>
+        /// <param name="dailyInterestRate"></param>
+        /// <param name="paymentStepDays"></param>
         /// <returns></returns>
-        public LoanResultModel CalculateLoan(decimal loanAmount, int loanTerm, decimal interestRate)
+        public LoanResultModel CalculateLoanInDays(decimal loanAmount, int loanTermDays, decimal dailyInterestRate, int paymentStepDays)
         {
-            var result = new LoanResultModel();
-            result.Schedule = new List<PaymentScheduleItem>();
+            decimal dailyRate = dailyInterestRate / 100;
+            int numberOfPayments = loanTermDays / paymentStepDays;
 
-            decimal monthlyRate = interestRate / 12 / 100;  
-            int totalMonths = loanTerm;
+            decimal dailyPayment = loanAmount * dailyRate / (1 - (decimal)Math.Pow(1 + (double)dailyRate, -numberOfPayments));
 
-            decimal annuityFactor = (monthlyRate * (decimal)Math.Pow((double)(1 + monthlyRate), totalMonths)) /
-                                    (decimal)(Math.Pow((double)(1 + monthlyRate), totalMonths) - 1);
-
-            result.MonthlyPayment = loanAmount * annuityFactor;
-            decimal remainingBalance = loanAmount;
-            
-            for (int month = 1; month <= totalMonths; month++)
+            var result = new LoanResultModel
             {
-                decimal interestPayment = remainingBalance * monthlyRate;
-                decimal principalPayment = result.MonthlyPayment - interestPayment;
+                MonthlyPayment = dailyPayment, 
+                Schedule = GenerateDailyPaymentSchedule(loanAmount, loanTermDays, dailyRate, paymentStepDays, dailyPayment)
+            };
+
+            result.TotalOverpayment = result.Schedule.Sum(s => s.InterestPayment);
+
+            return result;
+        }
+        /// <summary>
+        /// Метод для генерации графика платежей (месяцы)
+        /// </summary>
+        /// <param name="loanAmount"></param>
+        /// <param name="loanTermMonths"></param>
+        /// <param name="monthlyInterestRate"></param>
+        /// <param name="monthlyPayment"></param>
+        /// <returns></returns>
+        private List<PaymentScheduleItem> GenerateMonthlyPaymentSchedule(decimal loanAmount, int loanTermMonths, decimal monthlyInterestRate, decimal monthlyPayment)
+        {
+            var schedule = new List<PaymentScheduleItem>();
+            decimal remainingBalance = loanAmount;
+
+            for (int i = 1; i <= loanTermMonths; i++)
+            {
+                decimal interestPayment = remainingBalance * monthlyInterestRate;
+                decimal principalPayment = monthlyPayment - interestPayment;
                 remainingBalance -= principalPayment;
 
-                result.Schedule.Add(new PaymentScheduleItem
+                schedule.Add(new PaymentScheduleItem
                 {
-                    PaymentNumber = month,
-                    PaymentDate = DateTime.Now.AddMonths(month),
+                    PaymentNumber = i,
+                    PaymentDate = DateTime.Now.AddMonths(i),
                     PrincipalPayment = principalPayment,
                     InterestPayment = interestPayment,
                     RemainingBalance = remainingBalance
                 });
             }
 
-            result.TotalOverpayment = result.MonthlyPayment * totalMonths - loanAmount;
-            return result;
+            return schedule;
+        }
+        /// <summary>
+        /// Метод для генерации графика платежей (дни)
+        /// </summary>
+        /// <param name="loanAmount"></param>
+        /// <param name="loanTermDays"></param>
+        /// <param name="dailyInterestRate"></param>
+        /// <param name="paymentStepDays"></param>
+        /// <param name="dailyPayment"></param>
+        /// <returns></returns>
+        private List<PaymentScheduleItem> GenerateDailyPaymentSchedule(decimal loanAmount, int loanTermDays, decimal dailyInterestRate, int paymentStepDays, decimal dailyPayment)
+        {
+            var schedule = new List<PaymentScheduleItem>();
+            decimal remainingBalance = loanAmount;
+
+            for (int i = 1; i <= loanTermDays / paymentStepDays; i++)
+            {
+                decimal interestPayment = remainingBalance * dailyInterestRate;
+                decimal principalPayment = dailyPayment - interestPayment;
+                remainingBalance -= principalPayment;
+
+                schedule.Add(new PaymentScheduleItem
+                {
+                    PaymentNumber = i,
+                    PaymentDate = DateTime.Now.AddDays(i * paymentStepDays),
+                    PrincipalPayment = principalPayment,
+                    InterestPayment = interestPayment,
+                    RemainingBalance = remainingBalance
+                });
+            }
+
+            return schedule;
         }
     }
 }
